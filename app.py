@@ -54,6 +54,10 @@ def generate_desc(model, tokenizer, photo, max_length):
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/contrib',methods=['GET'])
+def contrib():
+    return render_template('contrib.html')
   
 @app.route('/predict_api',methods=['POST','GET'])
 def predict_api():
@@ -72,4 +76,4 @@ def predict_api():
 if __name__ == '__main__':
     print("Flask app running....")
     print("Initialised, waiting for connection.")
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',debug=True)
