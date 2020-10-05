@@ -11,7 +11,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+  <style>
+    html,body{
+      overflow-y: scroll;
+    }
+  </style>
 </head>
 
 <body>
@@ -39,7 +43,6 @@
       </div>
     </div>
   </nav>
-  <section>
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -47,6 +50,7 @@
                 <p class="lead text-muted">
                     Datasets! 
                     Mind lending a helping hand?
+                    Here is an example!
                 </p>
             </div>
         </div>
@@ -60,8 +64,27 @@
                 </div>
             </div>
         </div>
+        <div class="row justify-content-center">
+          <div class="col-lg-6 col-md-10 mt-5">
+            <form method="post" action="/contrib" enctype="multipart/form-data">
+              <div class="form-group bg-dark">
+                <label>Image</label>
+                <div class="input-group justify-content-center">
+                  <span class="container btn btn-default btn-file">
+                    <input name="image" type="file" id="imgInp">
+                  </span>
+                </div>
+                <label class="mt-3" for="caption">Image Description</label>
+                <input name="caption" type="text" class="form-control" autocomplete="off" placeholder="Caption">
+                <label class="mt-3" for="email">Email</label>
+                <input name= "email" type="email" class="form-control" autocomplete="off" placeholder="Email">
+              </div>
+              <button type="submit" class="btn bg-dark">Submit</button>
+            </form>
+          </div>
+        </div>
+        <div class="row mt-5" style="height:30px;"></div>
     </div>
-  </section>
 
 </body>
 

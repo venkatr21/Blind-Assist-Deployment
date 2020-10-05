@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import json
+from werkzeug import secure_filename
 from flask import Flask, request, jsonify, render_template, url_for
 from pickle import load
 from numpy import argmax
@@ -55,10 +56,17 @@ def generate_desc(model, tokenizer, photo, max_length):
 def home():
     return render_template('home.html')
 
-@app.route('/contrib',methods=['GET'])
+@app.route('/contrib',methods=['GET','POST'])
 def contrib():
-    return render_template('contrib.html')
-  
+    if request.method=='GET':
+        return render_template('contrib.html')
+    else:
+        email = request.form['email']
+        caption = request.form['caption']
+        imagesub = request.files['image']
+        imagesub.save(secure_filename(imagesub.filename))
+        return email+caption
+
 @app.route('/predict_api',methods=['POST','GET'])
 def predict_api():
     #file = request.files['image']
