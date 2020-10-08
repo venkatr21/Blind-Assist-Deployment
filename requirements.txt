@@ -15,3 +15,5 @@ pandas
 tpot
 cloudpickle
 opencv-python-headless
+azure-storage-blob==2.1.0
+pyodbc

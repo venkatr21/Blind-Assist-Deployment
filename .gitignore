@@ -1,2 +1,4 @@
 resources/
 images/
+blobconn.py
+dbcursor.py

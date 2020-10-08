@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 import json
 from werkzeug import secure_filename
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask,flash, request, jsonify, render_template, url_for
 from pickle import load
 from numpy import argmax
 from keras.preprocessing.text import Tokenizer
@@ -14,13 +14,21 @@ from keras.models import Model
 from keras.models import load_model
 from PIL import Image
 import cv2
-
+from dbcursor import conn
+from blobconn import blob
 app = Flask(__name__)
 
-global model,base,tokenizer
+global model,base,tokenizer,cursor,blobservice,err,cnxn
 model = load_model('resources/modelmain.h5')
 tokenizer = pickle.load(open('resources/tokenizer.pkl','rb'))
 base = load_model('resources/modelIncp.h5')
+err = True
+try:
+    cnxn = conn()
+    cursor = cnxn.cursor()
+    blobservice = blob()
+except:
+    err = False
 
 def word_for_id(integer, tokenizer):
     for word, index in tokenizer.word_index.items():
@@ -64,14 +72,31 @@ def contrib():
         email = request.form['email']
         caption = request.form['caption']
         imagesub = request.files['image']
-        imagesub.save(secure_filename(imagesub.filename))
-        return email+caption
+        imagesub.save(secure_filename("temp_img.jpg"))
+        container_name = 'images'
+        if err:
+            try : 
+                cursor.execute("SELECT max(id) FROM details;") 
+                row = cursor.fetchone()
+                if row[0]==None:
+                    nametemp = 1
+                else:
+                    nametemp = row[0]+1
+                query = "INSERT INTO details (id,caption,email) VALUES ("+str(nametemp)+",'"+caption+"','"+email+"');"
+                print(query)
+                cursor.execute(query);
+                nametemp = str(nametemp)+".jpg"
+                img = "./temp_img.jpg"
+                blobservice.create_blob_from_path(container_name, nametemp, img)
+                cnxn.commit()
+                return render_template('contrib.html', message = "Data added successfully!", type="bg-success")
+            except:
+                return render_template('contrib.html', message = "Unable to add Data currently!", type="bg-danger")
+        else:
+            return render_template('contrib.html', message = "Unable to add Data currently!", type="bg-danger")
 
 @app.route('/predict_api',methods=['POST','GET'])
 def predict_api():
-    #file = request.files['image']
-    #img = Image.open(file.stream)
-    #file.save('temp.jpg')
     r = request
     nparr = np.fromstring(r.data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
