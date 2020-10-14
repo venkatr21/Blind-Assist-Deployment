@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 import json
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from flask import Flask,flash, request, jsonify, render_template, url_for
 from pickle import load
 from numpy import argmax
@@ -28,6 +28,7 @@ try:
     cursor = cnxn.cursor()
     blobservice = blob()
 except:
+    print("Base Error")
     err = False
 
 def word_for_id(integer, tokenizer):
@@ -76,21 +77,26 @@ def contrib():
         container_name = 'images'
         if err:
             try : 
+                print("-->1")
                 cursor.execute("SELECT max(id) FROM details;") 
                 row = cursor.fetchone()
                 if row[0]==None:
                     nametemp = 1
                 else:
                     nametemp = row[0]+1
+                print("-->2")
                 query = "INSERT INTO details (id,caption,email) VALUES ("+str(nametemp)+",'"+caption+"','"+email+"');"
                 print(query)
                 cursor.execute(query);
+                print("-->3")
                 nametemp = str(nametemp)+".jpg"
                 img = "./temp_img.jpg"
                 blobservice.create_blob_from_path(container_name, nametemp, img)
+                print("-->4")
                 cnxn.commit()
                 return render_template('contrib.html', message = "Data added successfully!", type="bg-success")
             except:
+                print("Exec Error")
                 return render_template('contrib.html', message = "Unable to add Data currently!", type="bg-danger")
         else:
             return render_template('contrib.html', message = "Unable to add Data currently!", type="bg-danger")
